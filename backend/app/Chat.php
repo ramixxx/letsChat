@@ -4,6 +4,8 @@ namespace App;
 
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class Chat implements MessageComponentInterface {
   protected $clients;
@@ -20,13 +22,9 @@ class Chat implements MessageComponentInterface {
   {
       $numRecv = count($this->clients) - 1;
       echo sprintf('Connection %d sending message "%s" to %d other            connection%s' . "\n", $from->resourceId, $msg, $numRecv, $numRecv ==  1 ? '' : 's');
-      $response = [];
 
-      for($i=0; $i < 2; $i++) {
-        $response[$i]['id'] = $i;
-        $response[$i]['message'] = 'hello';
-        $response[$i]['sender'] = true;
-      }
+      $response = DB::select('select * from user_messages where recipient_id = ?', [$msg]);
+
       $response = json_encode($response);
       foreach ($this->clients as $client) {
         //The sender is not the receiver, send to other clients

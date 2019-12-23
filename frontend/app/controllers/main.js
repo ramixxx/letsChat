@@ -7,12 +7,14 @@ const { alias } = computed;
 
 export default Ember.Controller.extend({
 	session: service(),
+	websocket: service(),
 	sidebarOpenedRes: false,
 	queryParams: ['userId'],
 	userId: null,
 	contacts: computed.reads('model.contacts'),
 	init() {
 		this._super(...arguments);
+		this.websocket.turnOnWebsockets();
 		this.fetchChat();
 	},
 
@@ -57,6 +59,7 @@ export default Ember.Controller.extend({
 		},
 
 		selectUser(userId) {
+			this.websocket.socketRef.send(userId);
 		  	this.set('userId', userId);
 		  	this.fetchChat();
 		}

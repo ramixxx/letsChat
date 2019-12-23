@@ -154,67 +154,13 @@
 
   var _default = Ember.Component.extend({
     store: Ember.inject.service(),
-    websockets: Ember.inject.service(),
-    socketRef: null,
-
-    didInsertElement() {
-      this._super(...arguments);
-      /*
-        2. The next step you need to do is to create your actual websocket. Calling socketFor
-        will retrieve a cached websocket if one exists or in this case it
-        will create a new one for us.
-      */
-
-
-      const socket = this.websockets.socketFor('ws://localhost:8080/');
-      /*
-        3. The next step is to define your event handlers. All event handlers
-        are added via the `on` method and take 3 arguments: event name, callback
-        function, and the context in which to invoke the callback. All 3 arguments
-        are required.
-      */
-
-      socket.on('open', this.myOpenHandler, this);
-      socket.on('message', this.myMessageHandler, this);
-      socket.on('close', this.myCloseHandler, this);
-      this.set('socketRef', socket);
-    },
-
-    willDestroyElement() {
-      this._super(...arguments);
-
-      const socket = this.socketRef;
-      /*
-        4. The final step is to remove all of the listeners you have setup.
-      */
-
-      socket.off('open', this.myOpenHandler);
-      socket.off('message', this.myMessageHandler);
-      socket.off('close', this.myCloseHandler);
-    },
-
-    myOpenHandler(event) {
-      console.log(`On open event has been called: ${event}`);
-    },
-
-    myMessageHandler(event) {
-      console.log(`Message: ${event.data}`);
-      console.log(event);
-      this.set('model', JSON.parse(event.data));
-    },
-
-    myCloseHandler(event) {
-      console.log(event);
-      console.log(`On close event has been called: ${event}`);
-    },
-
     getChat: computed(function () {
       var test = this.store.peekAll('selected-user-chat');
       console.log('test');
     }),
     actions: {
-      submitChatText(chatInputValue, recipient_id) {
-        this.socketRef.send(chatInputValue); // Ember.$.ajax({
+      submitChatText(chatInputValue, recipient_id) {// this.socketRef.send(chatInputValue);
+        // Ember.$.ajax({
         //           type: "POST",
         //           url: "http://localhost:8000/api/postMessage",
         //           data: { user_id: 11, recipient_id: recipient_id, message: chatInputValue }
@@ -473,6 +419,7 @@
 
   var _default = Ember.Controller.extend({
     session: Ember.inject.service(),
+    websocket: Ember.inject.service(),
     sidebarOpenedRes: false,
     queryParams: ['userId'],
     userId: null,
@@ -481,6 +428,7 @@
     init() {
       this._super(...arguments);
 
+      this.websocket.turnOnWebsockets();
       this.fetchChat();
     },
 
@@ -527,6 +475,7 @@
       },
 
       selectUser(userId) {
+        this.websocket.socketRef.send(userId);
         this.set('userId', userId);
         this.fetchChat();
       } // selectUser(userId) {
@@ -1362,6 +1311,56 @@
     }
   });
 });
+;define("frontend/services/websocket", ["exports"], function (_exports) {
+  "use strict";
+
+  Object.defineProperty(_exports, "__esModule", {
+    value: true
+  });
+  _exports.default = void 0;
+
+  var _default = Ember.Service.extend({
+    socketRef: null,
+    websockets: Ember.inject.service(),
+
+    turnOnWebsockets() {
+      this._super(...arguments);
+
+      const socket = this.websockets.socketFor('ws://localhost:8080/');
+      socket.on('open', this.myOpenHandler, this);
+      socket.on('message', this.myMessageHandler, this);
+      socket.on('close', this.myCloseHandler, this);
+      this.set('socketRef', socket);
+    },
+
+    willDestroyElement() {
+      this._super(...arguments);
+
+      const socket = this.socketRef;
+      socket.off('open', this.myOpenHandler);
+      socket.off('message', this.myMessageHandler);
+      socket.off('close', this.myCloseHandler);
+    },
+
+    myOpenHandler(event) {
+      console.log(`On open event has been called: ${event}`);
+    },
+
+    myMessageHandler(event) {
+      console.log(`Message: ${event.data}`);
+      console.log(event);
+      this.set('model', JSON.parse(event.data));
+    },
+
+    myCloseHandler(event) {
+      console.log(event);
+      console.log(`On close event has been called: ${event}`);
+    }
+
+  });
+
+  _exports.default = _default;
+});
 ;define("frontend/services/websockets", ["exports", "ember-websockets/services/websockets"], function (_exports, _websockets) {
   "use strict";
 
@@ -1608,7 +1607,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("frontend/app")["default"].create({"name":"frontend","version":"0.0.0+d4f5473a"});
+            require("frontend/app")["default"].create({"name":"frontend","version":"0.0.0+9c07588e"});
           }
         
 //# sourceMappingURL=frontend.map
