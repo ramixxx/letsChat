@@ -1,0 +1,20 @@
+{{#each @model as |item|}}
+	{{#if item.sender}}
+		<div class="chatbox-container-left">
+			{{item.message}}
+		</div>
+	{{else}}
+		<div class="chatbox-container-right">
+			{{item.message}}
+		</div>
+	{{/if}}
+	<hr>
+	<div class="chatbox">
+		<form {{action "submitChatText" chatInputValue item.recipient_id on="submit"}}>
+			<button type="submit" class="chatbox-submit">Submit</button>
+			{{input class="chatbox-input" value=chatInputValue}}
+		</form>
+	</div>
+{{/each}}
+
+

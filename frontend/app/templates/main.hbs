@@ -1,0 +1,35 @@
+<div id="main">
+	<div class='header'>
+		<img src="logo-top.png">
+		<div class="dropdown" style="float:right;">
+		  <button class="dropbtn">Settings</button>
+		  <div class="dropdown-content">
+		  <a href="#">Link 1</a>
+		  <a href="#">Link 2</a>
+		  {{#if session.isAuthenticated}}
+	    <a href='#' {{action "invalidateSession"}}>Logout</a>
+	  		{{/if}}
+		  
+		  </div>
+		</div>
+	</div>
+
+	<div id="mySidebar" class="sidebar">
+		{{#if sidebarOpenedRes}}
+			<div id="main">
+  				<img src="arrowClose.png" height="20" width="20" id="closeButton" class="closebtn" {{action "toggleSidebar"}}>
+			</div>
+		{{else}}
+			<div id="main">
+  				<img src="arrowOpen.png" height="20" width="20" id="openButton" class="openbtn" {{action "toggleSidebar"}}>
+			</div>
+		{{/if}}
+		<Contact @model={{this.model.contacts}} @anAction={{action "selectUser"}}/>
+		<Channel @model={{this.model.channels}}/> 
+	</div>
+	<div id="mainView">
+		<div class="mainViewScrollDiv">
+			<Chat @model={{this.selectedChat}} @test={{action "test"}}/>
+		</div>
+	</div>
+</div>

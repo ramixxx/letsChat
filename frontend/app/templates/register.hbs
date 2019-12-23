@@ -1,0 +1,14 @@
+<p>Register Page</p>
+
+<div>
+	<img src="download.png" class='login-image'>
+<form class='login-register-form' {{action 'register' name email password on='submit'}}>
+  {{input class='login-input-field' value=name placeholder='Name'}}<br>
+  {{input class='login-input-field' value=email placeholder='Email'}}<br>
+  {{input class='login-input-field' value=password placeholder='Password' type='password'}}<br>
+  <button class="btn btn-primary btn-lg login-button" disabled="{{unless isValid 'disabled'}}" type="submit">Register</button>
+  {{#link-to "login"}}
+	  <button class="btn btn-primary btn-lg login-button">Login</button>
+  {{/link-to}}
+</form>
+</div>
