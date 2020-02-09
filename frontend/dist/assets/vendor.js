@@ -71785,9 +71785,9 @@ var Echo = function () {
 
 module.exports = Echo;
 
-},{}],"C:\\Users\\rayme\\Desktop\\My Stuff\\letsChat\\frontend\\tmp\\core_object-input_staging-SJplzcMt.tmp\\browserify_stubs.js":[function(require,module,exports){
+},{}],"C:\\Users\\rayme\\Desktop\\My Stuff\\letsChat\\frontend\\tmp\\core_object-input_staging-NsLYm54C.tmp\\browserify_stubs.js":[function(require,module,exports){
 define('npm:laravel-echo', function(){ return { 'default': require('laravel-echo')};})
-},{"laravel-echo":"C:\\Users\\rayme\\Desktop\\My Stuff\\letsChat\\frontend\\node_modules\\laravel-echo\\dist\\echo.common.js"}]},{},["C:\\Users\\rayme\\Desktop\\My Stuff\\letsChat\\frontend\\tmp\\core_object-input_staging-SJplzcMt.tmp\\browserify_stubs.js"]);
+},{"laravel-echo":"C:\\Users\\rayme\\Desktop\\My Stuff\\letsChat\\frontend\\node_modules\\laravel-echo\\dist\\echo.common.js"}]},{},["C:\\Users\\rayme\\Desktop\\My Stuff\\letsChat\\frontend\\tmp\\core_object-input_staging-NsLYm54C.tmp\\browserify_stubs.js"]);
 
 ;if (typeof FastBoot === 'undefined') { /*!
  * Bootstrap v3.4.1 (https://getbootstrap.com/)

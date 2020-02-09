@@ -913,7 +913,7 @@
   var _default = Model.extend({
     recipient_id: _emberData.default.attr('string'),
     message: _emberData.default.attr('string'),
-    sender: _emberData.default.attr('boolean')
+    profile_image: _emberData.default.attr('string')
   });
 
   _exports.default = _default;
@@ -1487,8 +1487,8 @@
   _exports.default = void 0;
 
   var _default = Ember.HTMLBars.template({
-    "id": "yvWGJTXf",
-    "block": "{\"symbols\":[\"item\",\"@model\"],\"statements\":[[4,\"each\",[[24,2,[]]],null,{\"statements\":[[4,\"if\",[[24,1,[\"sender\"]]],null,{\"statements\":[[0,\"\\t\\t\"],[7,\"div\"],[11,\"class\",\"chatbox-container-left\"],[9],[0,\"\\n\\t\\t\\t\"],[1,[24,1,[\"message\"]],false],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"\\t\\t\"],[7,\"div\"],[11,\"class\",\"chatbox-container-right\"],[9],[0,\"\\n\\t\\t\\t\"],[1,[24,1,[\"message\"]],false],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\t\"],[7,\"hr\"],[9],[10],[0,\"\\n\\t\"],[7,\"div\"],[11,\"class\",\"chatbox\"],[9],[0,\"\\n\\t\\t\"],[7,\"form\"],[9],[0,\"\\n\\t\\t\\t\"],[7,\"button\"],[11,\"class\",\"chatbox-submit\"],[11,\"type\",\"submit\"],[9],[0,\"Submit\"],[10],[0,\"\\n\\t\\t\\t\"],[1,[29,\"input\",null,[[\"class\",\"value\"],[\"chatbox-input\",[25,[\"chatInputValue\"]]]]],false],[0,\"\\n\\t\\t\"],[3,\"action\",[[24,0,[]],\"submitChatText\",[25,[\"chatInputValue\"]],[24,1,[\"recipient_id\"]]],[[\"on\"],[\"submit\"]]],[10],[0,\"\\n\\t\"],[10],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n\\n\"],[7,\"script\"],[12,\"src\",[23,\"getHostNameWithSocket\"]],[9],[10],[0,\"\\n\"]],\"hasEval\":false}",
+    "id": "DcTi2V0Q",
+    "block": "{\"symbols\":[\"item\",\"@model\"],\"statements\":[[4,\"each\",[[24,2,[]]],null,{\"statements\":[[4,\"if\",[[24,1,[\"sender\"]]],null,{\"statements\":[[0,\"\\t\"],[7,\"div\"],[11,\"class\",\"left-message-box\"],[9],[0,\"\\n\\t\\t\"],[7,\"div\"],[11,\"class\",\"chatbox-container-left\"],[9],[0,\"\\n\\t\\t\\t\"],[1,[24,1,[\"message\"]],false],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\\t\\t\"],[7,\"div\"],[11,\"class\",\"user-img-left\"],[9],[0,\"\\n\\t\\t\\t\\t\\t\\t\\t\"],[7,\"img\"],[12,\"src\",[30,[\"profile_pictures\",[24,1,[\"profile_image\"]]]]],[11,\"class\",\"chat-image-left\"],[9],[10],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\\t\"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"\\t\"],[7,\"div\"],[11,\"class\",\"right-message-box\"],[9],[0,\"\\n\\t\\t\"],[7,\"div\"],[11,\"class\",\"user-img-right\"],[9],[0,\"\\n\\t\\t\\t\\t\\t\\t\\t\"],[7,\"img\"],[12,\"src\",[30,[\"profile_pictures\",[24,1,[\"profile_image\"]]]]],[11,\"class\",\"chat-image-right\"],[9],[10],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\\t\\t\"],[7,\"div\"],[11,\"class\",\"chatbox-container-right\"],[9],[0,\"\\n\\t\\t\\t\"],[1,[24,1,[\"message\"]],false],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\"]],\"parameters\":[1]},null],[7,\"div\"],[11,\"class\",\"chatbox\"],[9],[0,\"\\n\\t\"],[7,\"form\"],[9],[0,\"\\n\\t\\t\"],[7,\"button\"],[11,\"class\",\"chatbox-submit\"],[11,\"type\",\"submit\"],[9],[0,\"Submit\"],[10],[0,\"\\n\\t\\t\"],[1,[29,\"input\",null,[[\"class\",\"value\"],[\"chatbox-input\",[25,[\"chatInputValue\"]]]]],false],[0,\"\\n\\t\"],[3,\"action\",[[24,0,[]],\"submitChatText\",[25,[\"chatInputValue\"]],[25,[\"item\",\"recipient_id\"]]],[[\"on\"],[\"submit\"]]],[10],[0,\"\\n\"],[10],[0,\"\\n\\n\"],[7,\"script\"],[12,\"src\",[23,\"getHostNameWithSocket\"]],[9],[10],[0,\"\\n\"]],\"hasEval\":false}",
     "meta": {
       "moduleName": "frontend/templates/components/chat.hbs"
     }
@@ -1627,7 +1627,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("frontend/app")["default"].create({"name":"frontend","version":"0.0.0+8db4d33d"});
+            require("frontend/app")["default"].create({"name":"frontend","version":"0.0.0+6c67c933"});
           }
         
 //# sourceMappingURL=frontend.map

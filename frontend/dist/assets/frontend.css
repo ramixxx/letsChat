@@ -7309,19 +7309,50 @@ td.visible-print {
 }
 
 .chatbox-container-left {
-  border: 2px solid grey;
-  background-color: #f1f1f1;
+  background-color: #82ccdd;
   margin: 10px;
   padding: 10px;
   border-radius: 20px;
   width: auto;
   display: inline-block;
+}
+
+.chat-image-left {
   float: left;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+}
+
+.user-img-left {
+  float: left;
+  margin: 10px;
+}
+
+.user-img-right {
+  float: right;
+  margin: 10px;
+}
+
+.chat-image-right {
+  float: right;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+}
+
+.user_img_msg {
+  height: 40px;
+  width: 40px;
+  border: 1.5px solid #f5f6fa;
+}
+
+.img_cont_msg {
+  float: right;
 }
 
 .chatbox-container-right {
-  border: 2px solid grey;
-  background-color: red;
+  background-color: #78e08f;
   margin: 10px;
   padding: 10px;
   border-radius: 20px;
@@ -7366,6 +7397,7 @@ hr {
   margin-bottom: 0px !important;
   border-top: 1px solid grey;
   margin-right: 20px !important;
+  margin-top: 0px !important;
 }
 
 #mainView {
@@ -7374,8 +7406,15 @@ hr {
   width: 100%;
 }
 
+.right-message-box {
+  height: 60px;
+}
+
+.left-message-box {
+  height: 60px;
+}
+
 .mainViewScrollDiv {
-  overflow-y: scroll;
   height: 100%;
   width: 100%;
   box-sizing: content-box;
@@ -7461,6 +7500,9 @@ a, a:hover, a:active, a:visited, a:focus {
 }
 
 body {
+  background: #7F7FD5;
+  background: -webkit-linear-gradient(to left, #91EAE4, #86A8E7, #7F7FD5);
+  background: linear-gradient(to left, #91EAE4, #86A8E7, #7F7FD5);
   margin: 0px;
 }
 

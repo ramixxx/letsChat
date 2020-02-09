@@ -15,7 +15,7 @@ class MessageController extends Controller
 {
     public function get(Request $request){
     	$filter = $request->get('filter');
-    	$allContacts = DB::select('select id,recipient_id,message from user_messages where recipient_id IN (?,?)', [$filter['selectedUserId'],$filter['activeUserId']]);
+    	$allContacts = DB::select('select M.id,M.recipient_id,M.message,C.profile_image FROM user_messages M INNER JOIN user_contacts C ON M.recipient_id = C.user_id WHERE M.recipient_id IN (?,?)', [$filter['selectedUserId'],$filter['activeUserId']]);
 
       return $allContacts;
     }
