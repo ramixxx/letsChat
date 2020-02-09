@@ -27,3 +27,8 @@ Route::get('selectedUserChats', 'api\MessageController@get');
 Route::post('postMessage', 'api\MessageController@post');
 
 Route::get('/Websocket', 'WebSockets@getInfo');
+
+Route::get('test-broadcast', function(){
+    
+});
+

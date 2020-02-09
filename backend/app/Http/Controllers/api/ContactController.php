@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class ContactController extends Controller
 {
-    public function show($id){ 
-    	$allContacts = DB::select('select id,name,is_active,surname from user_contacts where user_id = ?', [$id]);
+    public function show($id){
+    	$allContacts = DB::select('select id,name,is_active,surname,contact_id from user_contacts where user_id = ?', [$id]);
+      print_r("SSS");
 
-
-       	return response()->json($allContacts, 200); 
+       	return response()->json($allContacts, 200);
     }
 }

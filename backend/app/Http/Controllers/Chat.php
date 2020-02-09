@@ -1,17 +1,19 @@
 <?php
 
-namespace App;
+namespace App\Http\Controllers;
 
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+
+require '../vendor/autoload.php';
 
 class Chat implements MessageComponentInterface {
   protected $clients;
   public function __construct() {
       $this->clients = new \SplObjectStorage;
   }
+  
   public function onOpen(ConnectionInterface $conn)
   {
      // Store the new connection to send messages to later
@@ -24,7 +26,8 @@ class Chat implements MessageComponentInterface {
       echo sprintf('Connection %d sending message "%s" to %d other            connection%s' . "\n", $from->resourceId, $msg, $numRecv, $numRecv ==  1 ? '' : 's');
 
       $response = DB::select('select * from user_messages where recipient_id = ?', [$msg]);
-
+      $test = $this->test();
+      $response = $msg;
       $response = json_encode($response);
       foreach ($this->clients as $client) {
         //The sender is not the receiver, send to other clients

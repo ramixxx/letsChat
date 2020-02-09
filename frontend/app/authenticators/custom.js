@@ -9,37 +9,17 @@ export default Base.extend({
     sessionName: '',
 	activateLoginIcon: service('activate-login-icon'),
   restore(data) {
-
+    return new Promise((resolve, reject) => {
+      console.log(data);
+      if (!Ember.isEmpty(data.success.access_token)) {
+        console.log(data);
+        resolve(data);
+      } else {
+        reject();
+      }
+    });
   },
   authenticate(email, password) {
-	// this.activateLoginIcon.on();
- //    $.ajax({
- //        type: "POST",
- //        url: this.host + this.tokenEndpoint,
- //        data: { username: email, password: password }
- //    }).then(function (response) {
-
- //        this.set('authenticated', true);
- //        this.set('email', '');
- //        this.set('password', '');
-
- //        // this.store.createRecord('currentuser', {
- //        // 	idenitifer: response.id,
- //        // });
- //        console.log(response);
- //        return response;
- //        if(response.success.token != '') {
- //        	this.transitionToRoute('main');
- //        } else if(response.error == "Unauthorised") {
- //        	this.set('error', true);
- //    		this.activateLoginIcon.off();
- //        }
-
- //    }).catch(response => {
- //    	console.log(response);
- //    	this.set('error', true);
- //    	this.activateLoginIcon.off();
- //    })
  	const data = JSON.stringify({
       username: email, password: password
     });

@@ -7,9 +7,8 @@
 		  <a href="#">Link 1</a>
 		  <a href="#">Link 2</a>
 		  {{#if session.isAuthenticated}}
-	    <a href='#' {{action "invalidateSession"}}>Logout</a>
-	  		{{/if}}
-		  
+	    	<a href='#' {{action "invalidateSession"}}>Logout</a>
+  		{{/if}}
 		  </div>
 		</div>
 	</div>
@@ -25,7 +24,7 @@
 			</div>
 		{{/if}}
 		<Contact @model={{this.model.contacts}} @anAction={{action "selectUser"}}/>
-		<Channel @model={{this.model.channels}}/> 
+		<Channel @model={{this.model.channels}}/>
 	</div>
 	<div id="mainView">
 		<div class="mainViewScrollDiv">

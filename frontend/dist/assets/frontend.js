@@ -11,7 +11,7 @@
   _exports.default = void 0;
 
   var _default = _emberData.default.RESTAdapter.extend({
-    host: 'http://localhost:8000/api'
+    host: 'http://' + location.hostname + ':8000/api'
   });
 
   _exports.default = _default;
@@ -37,7 +37,7 @@
   _exports.default = void 0;
 
   var _default = _emberData.default.RESTAdapter.extend({
-    host: 'http://localhost:8000/api'
+    host: 'http://' + location.hostname + ':8000/api'
   });
 
   _exports.default = _default;
@@ -74,34 +74,20 @@
     sessionName: '',
     activateLoginIcon: Ember.inject.service('activate-login-icon'),
 
-    restore(data) {},
+    restore(data) {
+      return new Promise((resolve, reject) => {
+        console.log(data);
+
+        if (!Ember.isEmpty(data.success.access_token)) {
+          console.log(data);
+          resolve(data);
+        } else {
+          reject();
+        }
+      });
+    },
 
     authenticate(email, password) {
-      // this.activateLoginIcon.on();
-      //    $.ajax({
-      //        type: "POST",
-      //        url: this.host + this.tokenEndpoint,
-      //        data: { username: email, password: password }
-      //    }).then(function (response) {
-      //        this.set('authenticated', true);
-      //        this.set('email', '');
-      //        this.set('password', '');
-      //        // this.store.createRecord('currentuser', {
-      //        // 	idenitifer: response.id,
-      //        // });
-      //        console.log(response);
-      //        return response;
-      //        if(response.success.token != '') {
-      //        	this.transitionToRoute('main');
-      //        } else if(response.error == "Unauthorised") {
-      //        	this.set('error', true);
-      //    		this.activateLoginIcon.off();
-      //        }
-      //    }).catch(response => {
-      //    	console.log(response);
-      //    	this.set('error', true);
-      //    	this.activateLoginIcon.off();
-      //    })
       const data = JSON.stringify({
         username: email,
         password: password
@@ -140,7 +126,7 @@
 
   _exports.default = _default;
 });
-;define("frontend/components/chat", ["exports"], function (_exports) {
+;define("frontend/components/chat", ["exports", "npm:laravel-echo"], function (_exports, _npmLaravelEcho) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -154,31 +140,91 @@
 
   var _default = Ember.Component.extend({
     store: Ember.inject.service(),
+    user_id_sent: null,
+    recipient_id_sent: null,
+    message_sent: null,
+    model: null,
+    session: Ember.inject.service(),
+
+    init() {
+      this._super(...arguments);
+
+      const self = this; // window.io = require('socket.io-client');
+
+      window.Echo = new _npmLaravelEcho.default({
+        broadcaster: 'socket.io',
+        host: window.location.hostname + ':6001'
+      });
+      window.Echo.channel('office-dashboard').listen('.SomeTestEvent', function (e) {
+        var currentUserIdentifier = self.get('session.data.authenticated.identifier');
+        let newMessage = e.data;
+        let model = self.get('model');
+        let user_id = self.get('user_id_sent');
+        let recipient_id = self.get('recipient_id_sent');
+        let message_sent = self.get('message_sent');
+        let sender = //model.push({"id" : user_id, "recipient_id": recipient_id, "message": newMessage, "sender": null});
+        //console.log(model);
+        self.store.createRecord('selected-user-chat', {
+          id: user_id,
+          recipient_id: recipient_id,
+          message: newMessage,
+          sender: true
+        });
+        let allChat = self.store.peekAll('selected-user-chat'); // allChat.forEach(function(item, index){
+        // 	var userId = item.recipient_id;
+        // 	if (userId == currentUserIdentifier) {
+        // 		Ember.set(item, "sender", true);
+        // 	} else {
+        // 		Ember.set(item, "sender", false);
+        // 		//item['sender'] = true;
+        // 	}
+        // });
+        // console.log(allChat);
+
+        self.set('model', allChat); //this.set('selectedChat', e);
+      });
+    },
+
     getChat: computed(function () {
       var test = this.store.peekAll('selected-user-chat');
       console.log('test');
     }),
+    getHostNameWithSocket: computed(function () {
+      var hostName = location.hostname;
+      return "//localhost:6001/socket.io/socket.io.js";
+    }),
     actions: {
-      submitChatText(chatInputValue, recipient_id) {// this.socketRef.send(chatInputValue);
-        // Ember.$.ajax({
-        //           type: "POST",
-        //           url: "http://localhost:8000/api/postMessage",
-        //           data: { user_id: 11, recipient_id: recipient_id, message: chatInputValue }
-        //       }).then(response => {
-        //       	var id = response;
-        //       	this.store.createRecord('selected-user-chat', {
-        //       		id: id,
-        // 	  	recipient_id: recipient_id,
-        // 	  	message: chatInputValue,
-        // 	  	sender: false
-        // 	});
-        // 	let allChat = this.store.peekAll('selected-user-chat');
-        // 	this.set('model', allChat);
-        //       	// this.test();
-        //       }).catch(response => {
-        //       	alert(response);
-        //       	alert('some error occured!!!');
-        //       })
+      submitChatText(chatInputValue, recipient_id) {
+        // USED FOR SETTING THEM IN MODEL WHEN LARAVEL ECHO SERVER RECEIVES NEW MESSAGE.
+        var userIdentifier = this.get('session.data.authenticated.identifier');
+        this.set('user_id_sent', userIdentifier);
+        this.set('recipient_id_sent', recipient_id);
+        this.set('message_sent', chatInputValue);
+        var getModel = this.get('model');
+        this.set('model', getModel);
+        Ember.$.ajax({
+          type: "POST",
+          url: "http://" + location.hostname + ":8000/api/postMessage",
+          data: {
+            user_id: userIdentifier,
+            recipient_id: recipient_id,
+            message: chatInputValue
+          }
+        }).then(response => {
+          var id = response; // console.log(response);
+
+          this.store.createRecord('selected-user-chat', {
+            id: id,
+            recipient_id: recipient_id,
+            message: chatInputValue,
+            sender: false
+          });
+          let allChat = this.store.peekAll('selected-user-chat');
+          this.set('model', allChat); // this.test();
+        }).catch(response => {
+          alert(response);
+          alert('some error occured!!!');
+        });
       }
 
     }
@@ -299,8 +345,7 @@
   _exports.default = void 0;
 
   var _default = Ember.Controller.extend({
-    session: Ember.inject.service(),
-    actions: {}
+    session: Ember.inject.service()
   });
 
   _exports.default = _default;
@@ -370,32 +415,7 @@
         }, function (err) {
           console.log(err);
         });
-      } // authenticate(email, password) {
-      // 	this.activateLoginIcon.on();
-      //        $.ajax({
-      //            type: "POST",
-      //            url: "http://localhost:8000/api/login",
-      //            data: { email: email, password: password }
-      //        }).then(response => {
-      //            this.set('authenticated', true);
-      //            this.set('email', '');
-      //            this.set('password', '');
-      //            this.store.createRecord('currentuser', {
-      //            	idenitifer: response.id,
-      //            });
-      //            if(response.success.token != '') {
-      //            	this.transitionToRoute('main');
-      //            } else if(response.error == "Unauthorised") {
-      //            	this.set('error', true);
-      //        		this.activateLoginIcon.off();
-      //            }
-      //        }).catch(response => {
-      //        	console.log(response);
-      //        	this.set('error', true);
-      //        	this.activateLoginIcon.off();
-      //        })
-      // }
-
+      }
 
     }
   });
@@ -421,29 +441,40 @@
     session: Ember.inject.service(),
     websocket: Ember.inject.service(),
     sidebarOpenedRes: false,
-    queryParams: ['userId'],
-    userId: null,
+    queryParams: ['selectedUserId'],
+    selectedUserId: null,
     contacts: computed.reads('model.contacts'),
 
     init() {
       this._super(...arguments);
 
-      this.websocket.turnOnWebsockets();
       this.fetchChat();
     },
 
     async fetchChat() {
-      if (!this.userId) {
+      if (!this.selectedUserId) {
         this.set('selectedChat', []);
         return;
       }
 
+      let currentUserIdentifier = this.get('session.data.authenticated.identifier');
       let filter = {
-        id: this.userId
+        selectedUserId: this.selectedUserId,
+        activeUserId: currentUserIdentifier
       };
       let results = await this.store.query('selectedUserChat', {
         filter
       });
+      results.forEach(function (item, index) {
+        var userId = item.recipient_id;
+
+        if (userId == currentUserIdentifier) {
+          Ember.set(item, "sender", true);
+        } else {
+          Ember.set(item, "sender", false); //item['sender'] = true;
+        }
+      });
+      console.log(results);
       this.set('selectedChat', results);
     },
 
@@ -475,8 +506,8 @@
       },
 
       selectUser(userId) {
-        this.websocket.socketRef.send(userId);
-        this.set('userId', userId);
+        //this.websocket.socketRef.send(userId);
+        this.set('selectedUserId', userId);
         this.fetchChat();
       } // selectUser(userId) {
       // 	var self = this;
@@ -929,10 +960,15 @@
     this.route('login', {
       path: '/'
     });
+    this.route('login', {
+      path: '/login'
+    });
     this.route('register', {
       path: '/register'
     });
-    this.route('main');
+    this.route('main', {
+      path: '/main'
+    });
     this.route('channel');
     this.route('contacts', function () {
       this.route('chat', {
@@ -1028,7 +1064,7 @@
 
   _exports.default = _default;
 });
-;define("frontend/routes/login", ["exports", "ember-data"], function (_exports, _emberData) {
+;define("frontend/routes/login", ["exports", "ember-data", "ember-simple-auth/mixins/unauthenticated-route-mixin"], function (_exports, _emberData, _unauthenticatedRouteMixin) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -1036,11 +1072,12 @@
   });
   _exports.default = void 0;
 
-  var _default = Ember.Route.extend({
+  var _default = Ember.Route.extend(_unauthenticatedRouteMixin.default, {
+    routeAfterAuthentication: 'main',
     // model: function() {
     // var url = 'http://localhost:8000/api/contacts';
     // 	var promise = new Ember.RSVP.Promise(function(resolve, reject) {
-    //          var contacts = Ember.$.ajax({ url: url, type: 'GET' });         
+    //          var contacts = Ember.$.ajax({ url: url, type: 'GET' });
     //          resolve(contacts);
     //      });
     //      var ttt = DS.PromiseObject.create({ promise: promise });
@@ -1067,7 +1104,7 @@
 
   _exports.default = _default;
 });
-;define("frontend/routes/main", ["exports"], function (_exports) {
+;define("frontend/routes/main", ["exports", "ember-simple-auth/mixins/authenticated-route-mixin"], function (_exports, _authenticatedRouteMixin) {
   "use strict";
 
   Object.defineProperty(_exports, "__esModule", {
@@ -1075,14 +1112,16 @@
   });
   _exports.default = void 0;
 
-  var _default = Ember.Route.extend({
+  var _default = Ember.Route.extend(_authenticatedRouteMixin.default, {
     store: Ember.inject.service(),
     session: Ember.inject.service(),
+    currentUser: Ember.inject.service(),
     activateLoginIcon: Ember.inject.service('activate-login-icon'),
 
     async model() {
-      let contacts = await (await fetch('http://localhost:8000/api/contact/11')).json();
-      let channels = await (await fetch('http://localhost:8000/api/channel/11')).json(); //let tests = await (await fetch('http://localhost:8000/api/test')).json();
+      let currentUserIdentifier = this.get('session.data.authenticated.identifier');
+      let contacts = await (await fetch('http://localhost:8000/api/contact/' + currentUserIdentifier)).json();
+      let channels = await (await fetch('http://localhost:8000/api/channel/' + currentUserIdentifier)).json(); //let tests = await (await fetch('http://localhost:8000/api/test')).json();
 
       return {
         contacts,
@@ -1110,24 +1149,11 @@
       //        })
       // }
       invalidateSession() {
-        alert("here");
         this.get('session').invalidate();
       }
 
     }
   });
-
-  _exports.default = _default;
-});
-;define("frontend/routes/protected", ["exports", "ember-simple-auth/mixins/authenticated-route-mixin"], function (_exports, _authenticatedRouteMixin) {
-  "use strict";
-
-  Object.defineProperty(_exports, "__esModule", {
-    value: true
-  });
-  _exports.default = void 0;
-
-  var _default = Ember.Route.extend(_authenticatedRouteMixin.default);
 
   _exports.default = _default;
 });
@@ -1325,12 +1351,6 @@
 
     turnOnWebsockets() {
       this._super(...arguments);
-
-      const socket = this.websockets.socketFor('ws://localhost:8080/');
-      socket.on('open', this.myOpenHandler, this);
-      socket.on('message', this.myMessageHandler, this);
-      socket.on('close', this.myCloseHandler, this);
-      this.set('socketRef', socket);
     },
 
     willDestroyElement() {
@@ -1395,8 +1415,8 @@
   _exports.default = void 0;
 
   var _default = Ember.HTMLBars.template({
-    "id": "VC4Fsz7l",
-    "block": "{\"symbols\":[],\"statements\":[[1,[23,\"outlet\"],false]],\"hasEval\":false}",
+    "id": "eo2jppm/",
+    "block": "{\"symbols\":[],\"statements\":[[1,[23,\"outlet\"],false],[0,\"\\n\"]],\"hasEval\":false}",
     "meta": {
       "moduleName": "frontend/templates/application.hbs"
     }
@@ -1467,8 +1487,8 @@
   _exports.default = void 0;
 
   var _default = Ember.HTMLBars.template({
-    "id": "dm6qP06B",
-    "block": "{\"symbols\":[\"item\",\"@model\"],\"statements\":[[4,\"each\",[[24,2,[]]],null,{\"statements\":[[4,\"if\",[[24,1,[\"sender\"]]],null,{\"statements\":[[0,\"\\t\\t\"],[7,\"div\"],[11,\"class\",\"chatbox-container-left\"],[9],[0,\"\\n\\t\\t\\t\"],[1,[24,1,[\"message\"]],false],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"\\t\\t\"],[7,\"div\"],[11,\"class\",\"chatbox-container-right\"],[9],[0,\"\\n\\t\\t\\t\"],[1,[24,1,[\"message\"]],false],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\t\"],[7,\"hr\"],[9],[10],[0,\"\\n\\t\"],[7,\"div\"],[11,\"class\",\"chatbox\"],[9],[0,\"\\n\\t\\t\"],[7,\"form\"],[9],[0,\"\\n\\t\\t\\t\"],[7,\"button\"],[11,\"class\",\"chatbox-submit\"],[11,\"type\",\"submit\"],[9],[0,\"Submit\"],[10],[0,\"\\n\\t\\t\\t\"],[1,[29,\"input\",null,[[\"class\",\"value\"],[\"chatbox-input\",[25,[\"chatInputValue\"]]]]],false],[0,\"\\n\\t\\t\"],[3,\"action\",[[24,0,[]],\"submitChatText\",[25,[\"chatInputValue\"]],[24,1,[\"recipient_id\"]]],[[\"on\"],[\"submit\"]]],[10],[0,\"\\n\\t\"],[10],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n\\n\"]],\"hasEval\":false}",
+    "id": "yvWGJTXf",
+    "block": "{\"symbols\":[\"item\",\"@model\"],\"statements\":[[4,\"each\",[[24,2,[]]],null,{\"statements\":[[4,\"if\",[[24,1,[\"sender\"]]],null,{\"statements\":[[0,\"\\t\\t\"],[7,\"div\"],[11,\"class\",\"chatbox-container-left\"],[9],[0,\"\\n\\t\\t\\t\"],[1,[24,1,[\"message\"]],false],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"\\t\\t\"],[7,\"div\"],[11,\"class\",\"chatbox-container-right\"],[9],[0,\"\\n\\t\\t\\t\"],[1,[24,1,[\"message\"]],false],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\t\"],[7,\"hr\"],[9],[10],[0,\"\\n\\t\"],[7,\"div\"],[11,\"class\",\"chatbox\"],[9],[0,\"\\n\\t\\t\"],[7,\"form\"],[9],[0,\"\\n\\t\\t\\t\"],[7,\"button\"],[11,\"class\",\"chatbox-submit\"],[11,\"type\",\"submit\"],[9],[0,\"Submit\"],[10],[0,\"\\n\\t\\t\\t\"],[1,[29,\"input\",null,[[\"class\",\"value\"],[\"chatbox-input\",[25,[\"chatInputValue\"]]]]],false],[0,\"\\n\\t\\t\"],[3,\"action\",[[24,0,[]],\"submitChatText\",[25,[\"chatInputValue\"]],[24,1,[\"recipient_id\"]]],[[\"on\"],[\"submit\"]]],[10],[0,\"\\n\\t\"],[10],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n\\n\"],[7,\"script\"],[12,\"src\",[23,\"getHostNameWithSocket\"]],[9],[10],[0,\"\\n\"]],\"hasEval\":false}",
     "meta": {
       "moduleName": "frontend/templates/components/chat.hbs"
     }
@@ -1485,8 +1505,8 @@
   _exports.default = void 0;
 
   var _default = Ember.HTMLBars.template({
-    "id": "BBoou4zh",
-    "block": "{\"symbols\":[\"item\",\"@model\"],\"statements\":[[7,\"div\"],[11,\"class\",\"contactHeader\"],[9],[0,\"\\n\\n\"],[10],[0,\"\\n\"],[7,\"div\"],[11,\"class\",\"contactHeader\"],[9],[0,\"Contacts\"],[7,\"a\"],[11,\"href\",\"#\"],[9],[7,\"img\"],[11,\"src\",\"plus-button.png\"],[11,\"width\",\"15\"],[11,\"height\",\"15\"],[11,\"class\",\"plusButton\"],[9],[10],[10],[10],[0,\"\\n\"],[7,\"div\"],[11,\"id\",\"contactParent\"],[9],[0,\"\\n\"],[4,\"each\",[[24,2,[]]],null,{\"statements\":[[0,\"\\t\"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"class\",\"contactDiv\"],[12,\"id\",[24,1,[\"id\"]]],[9],[0,\"\\n\"],[4,\"if\",[[24,1,[\"is_active\"]]],null,{\"statements\":[[0,\"\\t\\t\\t\"],[7,\"img\"],[11,\"src\",\"on.png\"],[11,\"height\",\"15\"],[11,\"width\",\"15\"],[11,\"class\",\"contactStatusImage\"],[9],[10],[1,[24,1,[\"name\"]],false],[0,\" \"],[1,[24,1,[\"surname\"]],false],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"\\t\\t\\t\"],[7,\"img\"],[11,\"src\",\"off.png\"],[11,\"height\",\"15\"],[11,\"width\",\"15\"],[11,\"class\",\"contactStatusImage\"],[9],[10],[1,[24,1,[\"name\"]],false],[0,\" \"],[1,[24,1,[\"surname\"]],false],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\t\"],[3,\"action\",[[24,0,[]],[24,0,[\"anAction\"]],[24,1,[\"id\"]]]],[10],[0,\"\\n\"]],\"parameters\":[1]},null],[10],[0,\"\\n\\n\"]],\"hasEval\":false}",
+    "id": "gS9pm/IY",
+    "block": "{\"symbols\":[\"item\",\"@model\"],\"statements\":[[7,\"div\"],[11,\"class\",\"contactHeader\"],[9],[0,\"\\n\\n\"],[10],[0,\"\\n\"],[7,\"div\"],[11,\"class\",\"contactHeader\"],[9],[0,\"Contacts\"],[7,\"a\"],[11,\"href\",\"#\"],[9],[7,\"img\"],[11,\"src\",\"plus-button.png\"],[11,\"width\",\"15\"],[11,\"height\",\"15\"],[11,\"class\",\"plusButton\"],[9],[10],[10],[10],[0,\"\\n\"],[7,\"div\"],[11,\"id\",\"contactParent\"],[9],[0,\"\\n\"],[4,\"each\",[[24,2,[]]],null,{\"statements\":[[0,\"\\t\"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"class\",\"contactDiv\"],[12,\"id\",[24,1,[\"id\"]]],[9],[0,\"\\n\"],[4,\"if\",[[24,1,[\"is_active\"]]],null,{\"statements\":[[0,\"\\t\\t\\t\"],[7,\"img\"],[11,\"src\",\"on.png\"],[11,\"height\",\"15\"],[11,\"width\",\"15\"],[11,\"class\",\"contactStatusImage\"],[9],[10],[1,[24,1,[\"name\"]],false],[0,\" \"],[1,[24,1,[\"surname\"]],false],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"\\t\\t\\t\"],[7,\"img\"],[11,\"src\",\"off.png\"],[11,\"height\",\"15\"],[11,\"width\",\"15\"],[11,\"class\",\"contactStatusImage\"],[9],[10],[1,[24,1,[\"name\"]],false],[0,\" \"],[1,[24,1,[\"surname\"]],false],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\t\"],[3,\"action\",[[24,0,[]],[24,0,[\"anAction\"]],[24,1,[\"contact_id\"]]]],[10],[0,\"\\n\"]],\"parameters\":[1]},null],[10],[0,\"\\n\"]],\"hasEval\":false}",
     "meta": {
       "moduleName": "frontend/templates/components/contact.hbs"
     }
@@ -1503,8 +1523,8 @@
   _exports.default = void 0;
 
   var _default = Ember.HTMLBars.template({
-    "id": "GEmkzvCA",
-    "block": "{\"symbols\":[\"item\",\"@model\"],\"statements\":[[4,\"if\",[[24,2,[]]],null,{\"statements\":[[0,\"\\t\"],[7,\"h1\"],[9],[0,\" We have model\"],[10],[0,\"\\n\"],[4,\"each\",[[24,2,[]]],null,{\"statements\":[[0,\"    \\t\"],[7,\"p\"],[9],[0,\"Hello, \"],[1,[24,1,[\"name\"]],false],[0,\" \"],[1,[24,1,[\"surname\"]],false],[0,\"!\"],[10],[0,\"\\n\"]],\"parameters\":[1]},null]],\"parameters\":[]},null]],\"hasEval\":false}",
+    "id": "ohKSiUI8",
+    "block": "{\"symbols\":[\"item\",\"@model\"],\"statements\":[[7,\"h1\"],[9],[0,\"HELLO2\"],[10],[0,\"\\n\"],[4,\"if\",[[24,2,[]]],null,{\"statements\":[[0,\"\\t\"],[7,\"h1\"],[9],[0,\" We have model\"],[10],[0,\"\\n\"],[4,\"each\",[[24,2,[]]],null,{\"statements\":[[0,\"    \\t\"],[7,\"p\"],[9],[0,\"Hello, \"],[1,[24,1,[\"name\"]],false],[0,\" \"],[1,[24,1,[\"surname\"]],false],[0,\"!\"],[10],[0,\"\\n\"]],\"parameters\":[1]},null]],\"parameters\":[]},null]],\"hasEval\":false}",
     "meta": {
       "moduleName": "frontend/templates/components/main.hbs"
     }
@@ -1557,8 +1577,8 @@
   _exports.default = void 0;
 
   var _default = Ember.HTMLBars.template({
-    "id": "mzwhyRTI",
-    "block": "{\"symbols\":[],\"statements\":[[7,\"div\"],[11,\"id\",\"main\"],[9],[0,\"\\n\\t\"],[7,\"div\"],[11,\"class\",\"header\"],[9],[0,\"\\n\\t\\t\"],[7,\"img\"],[11,\"src\",\"logo-top.png\"],[9],[10],[0,\"\\n\\t\\t\"],[7,\"div\"],[11,\"class\",\"dropdown\"],[11,\"style\",\"float:right;\"],[9],[0,\"\\n\\t\\t  \"],[7,\"button\"],[11,\"class\",\"dropbtn\"],[9],[0,\"Settings\"],[10],[0,\"\\n\\t\\t  \"],[7,\"div\"],[11,\"class\",\"dropdown-content\"],[9],[0,\"\\n\\t\\t  \"],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"Link 1\"],[10],[0,\"\\n\\t\\t  \"],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"Link 2\"],[10],[0,\"\\n\"],[4,\"if\",[[25,[\"session\",\"isAuthenticated\"]]],null,{\"statements\":[[0,\"\\t    \"],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"Logout\"],[3,\"action\",[[24,0,[]],\"invalidateSession\"]],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\t\\t  \\n\\t\\t  \"],[10],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\\t\"],[10],[0,\"\\n\\n\\t\"],[7,\"div\"],[11,\"id\",\"mySidebar\"],[11,\"class\",\"sidebar\"],[9],[0,\"\\n\"],[4,\"if\",[[25,[\"sidebarOpenedRes\"]]],null,{\"statements\":[[0,\"\\t\\t\\t\"],[7,\"div\"],[11,\"id\",\"main\"],[9],[0,\"\\n  \\t\\t\\t\\t\"],[7,\"img\"],[11,\"src\",\"arrowClose.png\"],[11,\"height\",\"20\"],[11,\"width\",\"20\"],[11,\"id\",\"closeButton\"],[11,\"class\",\"closebtn\"],[9],[3,\"action\",[[24,0,[]],\"toggleSidebar\"]],[10],[0,\"\\n\\t\\t\\t\"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"\\t\\t\\t\"],[7,\"div\"],[11,\"id\",\"main\"],[9],[0,\"\\n  \\t\\t\\t\\t\"],[7,\"img\"],[11,\"src\",\"arrowOpen.png\"],[11,\"height\",\"20\"],[11,\"width\",\"20\"],[11,\"id\",\"openButton\"],[11,\"class\",\"openbtn\"],[9],[3,\"action\",[[24,0,[]],\"toggleSidebar\"]],[10],[0,\"\\n\\t\\t\\t\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\t\\t\"],[5,\"contact\",[],[[\"@model\",\"@anAction\"],[[24,0,[\"model\",\"contacts\"]],[29,\"action\",[[24,0,[]],\"selectUser\"],null]]]],[0,\"\\n\\t\\t\"],[5,\"channel\",[],[[\"@model\"],[[24,0,[\"model\",\"channels\"]]]]],[0,\" \\n\\t\"],[10],[0,\"\\n\\t\"],[7,\"div\"],[11,\"id\",\"mainView\"],[9],[0,\"\\n\\t\\t\"],[7,\"div\"],[11,\"class\",\"mainViewScrollDiv\"],[9],[0,\"\\n\\t\\t\\t\"],[5,\"chat\",[],[[\"@model\",\"@test\"],[[24,0,[\"selectedChat\"]],[29,\"action\",[[24,0,[]],\"test\"],null]]]],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\\t\"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}",
+    "id": "HtglIGmx",
+    "block": "{\"symbols\":[],\"statements\":[[7,\"div\"],[11,\"id\",\"main\"],[9],[0,\"\\n\\t\"],[7,\"div\"],[11,\"class\",\"header\"],[9],[0,\"\\n\\t\\t\"],[7,\"img\"],[11,\"src\",\"logo-top.png\"],[9],[10],[0,\"\\n\\t\\t\"],[7,\"div\"],[11,\"class\",\"dropdown\"],[11,\"style\",\"float:right;\"],[9],[0,\"\\n\\t\\t  \"],[7,\"button\"],[11,\"class\",\"dropbtn\"],[9],[0,\"Settings\"],[10],[0,\"\\n\\t\\t  \"],[7,\"div\"],[11,\"class\",\"dropdown-content\"],[9],[0,\"\\n\\t\\t  \"],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"Link 1\"],[10],[0,\"\\n\\t\\t  \"],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"Link 2\"],[10],[0,\"\\n\"],[4,\"if\",[[25,[\"session\",\"isAuthenticated\"]]],null,{\"statements\":[[0,\"\\t    \\t\"],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"Logout\"],[3,\"action\",[[24,0,[]],\"invalidateSession\"]],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\t\\t  \"],[10],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\\t\"],[10],[0,\"\\n\\n\\t\"],[7,\"div\"],[11,\"id\",\"mySidebar\"],[11,\"class\",\"sidebar\"],[9],[0,\"\\n\"],[4,\"if\",[[25,[\"sidebarOpenedRes\"]]],null,{\"statements\":[[0,\"\\t\\t\\t\"],[7,\"div\"],[11,\"id\",\"main\"],[9],[0,\"\\n  \\t\\t\\t\\t\"],[7,\"img\"],[11,\"src\",\"arrowClose.png\"],[11,\"height\",\"20\"],[11,\"width\",\"20\"],[11,\"id\",\"closeButton\"],[11,\"class\",\"closebtn\"],[9],[3,\"action\",[[24,0,[]],\"toggleSidebar\"]],[10],[0,\"\\n\\t\\t\\t\"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"\\t\\t\\t\"],[7,\"div\"],[11,\"id\",\"main\"],[9],[0,\"\\n  \\t\\t\\t\\t\"],[7,\"img\"],[11,\"src\",\"arrowOpen.png\"],[11,\"height\",\"20\"],[11,\"width\",\"20\"],[11,\"id\",\"openButton\"],[11,\"class\",\"openbtn\"],[9],[3,\"action\",[[24,0,[]],\"toggleSidebar\"]],[10],[0,\"\\n\\t\\t\\t\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\t\\t\"],[5,\"contact\",[],[[\"@model\",\"@anAction\"],[[24,0,[\"model\",\"contacts\"]],[29,\"action\",[[24,0,[]],\"selectUser\"],null]]]],[0,\"\\n\\t\\t\"],[5,\"channel\",[],[[\"@model\"],[[24,0,[\"model\",\"channels\"]]]]],[0,\"\\n\\t\"],[10],[0,\"\\n\\t\"],[7,\"div\"],[11,\"id\",\"mainView\"],[9],[0,\"\\n\\t\\t\"],[7,\"div\"],[11,\"class\",\"mainViewScrollDiv\"],[9],[0,\"\\n\\t\\t\\t\"],[5,\"chat\",[],[[\"@model\",\"@test\"],[[24,0,[\"selectedChat\"]],[29,\"action\",[[24,0,[]],\"test\"],null]]]],[0,\"\\n\\t\\t\"],[10],[0,\"\\n\\t\"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}",
     "meta": {
       "moduleName": "frontend/templates/main.hbs"
     }
@@ -1607,7 +1627,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("frontend/app")["default"].create({"name":"frontend","version":"0.0.0+9c07588e"});
+            require("frontend/app")["default"].create({"name":"frontend","version":"0.0.0+8db4d33d"});
           }
         
 //# sourceMappingURL=frontend.map

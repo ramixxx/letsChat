@@ -2,6 +2,9 @@
 
 module.exports = function(environment) {
   let ENV = {
+    'ember-websockets': {
+      socketIO: true
+    },
     modulePrefix: 'frontend',
     environment,
     rootURL: '/',
@@ -35,7 +38,7 @@ module.exports = function(environment) {
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
     ENV.contentSecurityPolicy = {
       // ... other stuff here
-      'connect-src': "'self' * http://localhost:8000/api"
+      'connect-src': "'self' * http://77.93.29.33:8000/api"
     };
   }
 

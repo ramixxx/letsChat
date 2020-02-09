@@ -9,23 +9,37 @@ export default Ember.Controller.extend({
 	session: service(),
 	websocket: service(),
 	sidebarOpenedRes: false,
-	queryParams: ['userId'],
-	userId: null,
+	queryParams: ['selectedUserId'],
+	selectedUserId: null,
 	contacts: computed.reads('model.contacts'),
+
 	init() {
 		this._super(...arguments);
-		this.websocket.turnOnWebsockets();
 		this.fetchChat();
 	},
 
 	async fetchChat() {
-		if(!this.userId) {
+		if(!this.selectedUserId) {
 			this.set('selectedChat', []);
 			return;
 		}
-		let filter = { id: this.userId };
-	    let results = await this.store.query('selectedUserChat', { filter });
-	    this.set('selectedChat', results);
+
+		let currentUserIdentifier = this.get('session.data.authenticated.identifier');
+		let filter = { selectedUserId: this.selectedUserId, activeUserId: currentUserIdentifier };
+	  let results = await this.store.query('selectedUserChat', { filter });
+
+
+		results.forEach(function(item, index){
+			var userId = item.recipient_id;
+			if (userId == currentUserIdentifier) {
+				Ember.set(item, "sender", true);
+			} else {
+				Ember.set(item, "sender", false);
+				//item['sender'] = true;
+			}
+		});
+		console.log(results);
+	  	this.set('selectedChat', results);
 	},
 
 	didSidebarChanged: Ember.observer('sidebarOpened', function() {
@@ -40,7 +54,7 @@ export default Ember.Controller.extend({
 			document.getElementById("mySidebar").style.width = "250px";
   			document.getElementById("main").style.marginLeft = "250px";
   			$('#closeButton').removeClass("closebtnmargin");
-  			
+
 		}
   	}),
 
@@ -59,8 +73,8 @@ export default Ember.Controller.extend({
 		},
 
 		selectUser(userId) {
-			this.websocket.socketRef.send(userId);
-		  	this.set('userId', userId);
+			//this.websocket.socketRef.send(userId);
+		  	this.set('selectedUserId', userId);
 		  	this.fetchChat();
 		}
 
@@ -98,14 +112,3 @@ export default Ember.Controller.extend({
 		// }
 	}
 });
-
-
-
-
-
-
-
-
-
-
-

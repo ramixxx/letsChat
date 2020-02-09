@@ -1,17 +1,19 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import Ember from 'ember';
+import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Route.extend({
+export default Route.extend(AuthenticatedRouteMixin,{
 	store: service(),
 	session: service(),
+	currentUser: service(),
 	activateLoginIcon: service('activate-login-icon'),
-	
 
 
 	async model() {
-		let contacts = await (await fetch('http://localhost:8000/api/contact/11')).json();
-		let channels = await (await fetch('http://localhost:8000/api/channel/11')).json();
+		let currentUserIdentifier = this.get('session.data.authenticated.identifier');
+		let contacts = await (await fetch('http://localhost:8000/api/contact/' + currentUserIdentifier)).json();
+		let channels = await (await fetch('http://localhost:8000/api/channel/' + currentUserIdentifier)).json();
   		//let tests = await (await fetch('http://localhost:8000/api/test')).json();
   		return { contacts, channels };
 	},
@@ -39,7 +41,7 @@ export default Route.extend({
 		// }
 
 		invalidateSession() {
-			alert("here");
+
 	    	this.get('session').invalidate();
       	}
 	}

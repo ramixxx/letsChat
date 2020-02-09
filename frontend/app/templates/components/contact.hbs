@@ -4,7 +4,7 @@
 <div class="contactHeader">Contacts<a href="#"><img src="plus-button.png" width="15" height="15" class="plusButton"></a></div>
 <div id="contactParent">
 {{#each @model as |item|}}
-	<a href="#" class="contactDiv" id={{item.id}} {{action this.anAction item.id}}>
+	<a href="#" class="contactDiv" id={{item.id}} {{action this.anAction item.contact_id}}>
 		{{#if item.is_active}}
 			<img src="on.png" height="15" width="15" class="contactStatusImage">{{item.name}} {{item.surname}}
 		{{else}}
@@ -13,4 +13,3 @@
 	</a>
 	{{/each}}
 </div>
-

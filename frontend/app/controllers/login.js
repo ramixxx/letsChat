@@ -12,12 +12,12 @@ export default Ember.Controller.extend({
 	error: false,
 	email: '',
 	isValid: match('email', /^.+@.+\..+$/),
-  	isDisabled: not('isValid'),
-  	session: service(),
+	isDisabled: not('isValid'),
+	session: service(),
 
-  	didActivateLogoChange: Ember.computed('activateLoginIcon.loadingLogin', function() {
-  		return this.get('activateLoginIcon.loadingLogin');
-  	}),
+	didActivateLogoChange: Ember.computed('activateLoginIcon.loadingLogin', function() {
+		return this.get('activateLoginIcon.loadingLogin');
+	}),
 
 	actions: {
 		authenticate() {
@@ -28,32 +28,5 @@ export default Ember.Controller.extend({
 	        	console.log(err);
 	      	});
     }
-		// authenticate(email, password) {
-		// 	this.activateLoginIcon.on();
-	 //        $.ajax({
-	 //            type: "POST",
-	 //            url: "http://localhost:8000/api/login",
-	 //            data: { email: email, password: password }
-	 //        }).then(response => {
-	 //            this.set('authenticated', true);
-	 //            this.set('email', '');
-	 //            this.set('password', '');
-
-	 //            this.store.createRecord('currentuser', {
-	 //            	idenitifer: response.id,
-	 //            });
-	 //            if(response.success.token != '') {
-	 //            	this.transitionToRoute('main');
-	 //            } else if(response.error == "Unauthorised") {
-	 //            	this.set('error', true);
-	 //        		this.activateLoginIcon.off();
-	 //            }
-
-	 //        }).catch(response => {
-	 //        	console.log(response);
-	 //        	this.set('error', true);
-	 //        	this.activateLoginIcon.off();
-	 //        })
-		// }
 	}
 });
