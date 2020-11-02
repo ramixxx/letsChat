@@ -21,12 +21,25 @@ export default Ember.Controller.extend({
 
 	actions: {
 		authenticate() {
+			console.log("WTF");
 	    	let { email, password } = this.getProperties('email', 'password');
+				let controller = this;
 	    	this.get('session').authenticate('authenticator:custom', email, password).then(function(result) {
-	        	console.log(result);
-	      	}, function(err) {
-	        	console.log(err);
-	      	});
+						let currentUserIdentifier = controller.get('session.data.authenticated.identifier');
+						console.log("IDENTIFIER : ", currentUserIdentifier);
+						console.log("?@?@?@");
+						console.log(controller.get('session').data);
+						$.ajax({
+				            type: "POST",
+				            url: "http://localhost:8000/api/makeUserOnline/" + currentUserIdentifier
+				    }).then(response => {
+
+				        	// this.activateLoginIcon.off();
+
+						});
+      	}, function(err) {
+        	console.log(err);
+      	});
     }
 	}
 });

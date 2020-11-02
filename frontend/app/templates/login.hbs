@@ -1,23 +1,25 @@
 <div>
-<img src="download.png" class='login-image'>
-<form class='login-register-form' {{action 'authenticate' on='submit'}}>
-  	{{input class='login-input-field' value=email id='email' placeholder='Email' type='email'}}<br>
-  	{{input class='login-input-field' value=password id='password' placeholder='Password' type='password'}}<br>
-	<button class="btn btn-primary btn-lg login-button" disabled={{isDisabled}}>Login</button>
-	{{#link-to "register"}}
-	  <button class="btn btn-primary btn-lg login-button">Register</button>
-	{{/link-to}}
-</form>
-<br>
-{{#if didActivateLogoChange}}
-<div class="loader-wrapper">
-    <span class="loader"><span class="loader-inner"></span></span>
-</div>
-{{/if}}
+  <img src="download.png" alt="Cant show image" class="login-image">
+  <form class="login-register-form" {{action "authenticate" on="submit"}}>
+    {{input class="login-input-field" value=email id="email" placeholder="Email" type="email"}}
+    <br>
+    {{input class="login-input-field" value=password id="password" placeholder="Password" type="password"}}
+    <br>
+    <button class="btn btn-primary btn-lg login-button" disabled={{isDisabled}}>Login</button>
+    {{#link-to "register"}}
+      <button class="btn btn-primary btn-lg login-button">Register</button>
+    {{/link-to}}
+  </form>
+  <br>
+  {{#if didActivateLogoChange}}
+    <div class="loader-wrapper">
+      <span class="loader"><span class="loader-inner"></span></span>
+    </div>
+  {{/if}}
 
-{{#if error}}
-<h1> Wrong credentials! </h1>
-{{/if}}
+  {{#if error}}
+    <h1> Wrong credentials! </h1>
+  {{/if}}
 </div>
 
 

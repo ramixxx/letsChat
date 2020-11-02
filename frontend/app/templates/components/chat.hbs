@@ -1,30 +1,41 @@
 {{#each @model as |item|}}
-	{{#if item.sender}}
-	<div class="left-message-box">
-		<div class="chatbox-container-left">
-			{{item.message}}
-		</div>
-		<div class="user-img-left">
-							<img src="profile_pictures{{item.profile_image}}" class="chat-image-left">
-		</div>
-	</div>
-	{{else}}
-	<div class="right-message-box">
-		<div class="user-img-right">
-							<img src="profile_pictures{{item.profile_image}}" class="chat-image-right">
-		</div>
-		<div class="chatbox-container-right">
-			{{item.message}}
-		</div>
-		</div>
-	{{/if}}
+		{{#if item.sender}}
+				<div class="left-message-box">
+					<div class="user-img-left">
+							<img src="profile_pictures{{item.profile_image}}" alt="Smiley face" class="chat-image-left">
+					</div>
+						<div>
+							<div class="chatbox-container-left">
+								{{item.message}}
+								<div class="message-date-left">
+									{{item.message_date}}
+								</div>
+							</div>
+						</div>
 
+				</div>
+		{{else}}
+				<div class="right-message-box">
+						<div class="user-img-right">
+								<img src="profile_pictures{{item.profile_image}}" alt="Smiley face" class="chat-image-right">
+						</div>
+						<div>
+							<div class="chatbox-container-right">
+									{{item.message}}
+									<div class="message-date-right">
+										{{item.message_date}}
+									</div>
+							</div>
+						</div>
+
+				</div>
+		{{/if}}
 {{/each}}
 <div class="chatbox">
-	<form {{action "submitChatText" chatInputValue item.recipient_id on="submit"}}>
-		<button type="submit" class="chatbox-submit">Submit</button>
-		{{input class="chatbox-input" value=chatInputValue}}
-	</form>
+		<form {{action "submitChatText" chatInputValue on="submit"}}>
+				<button type="submit" class="chatbox-submit">Submit</button>
+				{{input class="chatbox-input" id="chatbox-input" value=chatInputValue}}
+		</form>
 </div>
 
 <script src={{getHostNameWithSocket}}></script>

@@ -12,7 +12,8 @@
 .chatbox-container-left {
   background-color:#82ccdd;
   margin:10px;
-  padding:10px;
+  padding:5px;
+	height:30px;
   border-radius: 20px;
   width:auto;
   display: inline-block;
@@ -26,6 +27,10 @@
 // 	height:40px;
 // }
 
+#chat-scroll-div {
+	margin-left:1px;
+}
+
 .chat-image-left {
 	float:left;
 	width:40px;
@@ -33,9 +38,23 @@
 	border-radius: 20px;
 }
 
+.message-date-left {
+	float:right;
+	font-size:10px;
+	padding:10px;
+	color:white;
+}
+
 .user-img-left {
 	float:left;
 	margin:10px;
+}
+
+.message-date-right {
+	float:right;
+	font-size:10px;
+	padding:10px;
+	color:white;
 }
 
 .user-img-right {
@@ -64,7 +83,8 @@
 .chatbox-container-right {
   background-color:#78e08f;
   margin:10px;
-  padding:10px;
+  padding:5px;
+	height:30px;
   border-radius: 20px;
   width:auto;
   display: inline-block;
@@ -126,7 +146,7 @@ hr {
 }
 
 .left-message-box {
-	height:60px;
+	height:70px;
 }
 
 .mainViewScrollDiv {
@@ -312,6 +332,7 @@ body {
 .dropdown {
   position: relative;
   display: inline-block;
+	float:right;
 }
 
 .dropdown-content {

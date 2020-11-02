@@ -21,9 +21,10 @@ class SomeTestEvent implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($value)
+    public function __construct($value, $date)
     {
         $this->data['value'] = $value;
+        $this->data['date'] = $date;
     }
 
     /**
@@ -39,7 +40,8 @@ class SomeTestEvent implements ShouldBroadcast
     public function broadcastWith()
     {
         return [
-            'data' => $this->data['value']
+            'data' => $this->data['value'],
+            'date' => $this->data['date']
         ];
     }
 

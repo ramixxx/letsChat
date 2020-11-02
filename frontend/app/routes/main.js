@@ -14,8 +14,9 @@ export default Route.extend(AuthenticatedRouteMixin,{
 		let currentUserIdentifier = this.get('session.data.authenticated.identifier');
 		let contacts = await (await fetch('http://localhost:8000/api/contact/' + currentUserIdentifier)).json();
 		let channels = await (await fetch('http://localhost:8000/api/channel/' + currentUserIdentifier)).json();
+		let config = await (await fetch('http://localhost:8000/api/config/' + currentUserIdentifier)).json();
   		//let tests = await (await fetch('http://localhost:8000/api/test')).json();
-  		return { contacts, channels };
+  	return { contacts, channels, config };
 	},
 
 	// setupController(controller, model) {
@@ -42,7 +43,19 @@ export default Route.extend(AuthenticatedRouteMixin,{
 
 		invalidateSession() {
 
-	    	this.get('session').invalidate();
-      	}
+				let controller = this;
+				let currentUserIdentifier = controller.get('session.data.authenticated.identifier');
+				console.log("CURR USER ID : ",currentUserIdentifier);
+				$.ajax({
+            type: "POST",
+            url: "http://localhost:8000/api/logout/" + currentUserIdentifier
+        }).then(response => {
+        	// this.activateLoginIcon.off();
+        	this.store.unloadAll('contact');
+           // this.transitionTo('login');
+					 this.get('session').invalidate();
+        })
+
+		}
 	}
 });
