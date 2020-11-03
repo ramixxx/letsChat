@@ -22,19 +22,6 @@ export default Route.extend(UnauthenticatedRouteMixin, {
 
 
 	actions: {
-// 	  	getContacts() {
-// 	  		$.ajax({
-// 	            type: "GET",
-// 	            url: "http://localhost:8000/api/contacts"
-// 	        }).then(response => {
-// //	            alert(JSON.stringify(response));
-// 	            this.store.createRecord('contact', {
-// 	            	id: '1',
-// 	            	name: response[0].name,
-// 	            	surname: response[0].surname
-// 	            });
-// 	        });
 
-// 	  	}
   	}
 });

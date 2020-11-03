@@ -31,7 +31,7 @@ export default Ember.Controller.extend({
 						console.log(controller.get('session').data);
 						$.ajax({
 				            type: "POST",
-				            url: "http://localhost:8000/api/makeUserOnline/" + currentUserIdentifier
+				            url: "http://"+window.location.hostname+":8000/api/makeUserOnline/" + currentUserIdentifier
 				    }).then(response => {
 
 				        	// this.activateLoginIcon.off();

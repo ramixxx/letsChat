@@ -16,8 +16,10 @@ export default Component.extend({
 	current_recipient_id: null,
 	recipient_user_image: null,
 	current_user_image: null,
+	isChatActive: false,
 
 	didModelChange: Ember.observer('model', function() {
+		console.log("MODEL DID CHANGE");
 		let profile_image = this.get('config')[0].value;
 		let model = this.get('model');
 		var currentUserIdentifier = this.get('session.data.authenticated.identifier');
@@ -26,9 +28,6 @@ export default Component.extend({
 				this.set('current_recipient_id',item.recipient_id);
 				this.set('current_user_id', currentUserIdentifier);
 				this.set('current_user_image',profile_image);
-				console.log("WWWWWW");
-				console.log(item.profile_image);
-
 			} else {
 				this.set('recipient_user_image',item.profile_image);
 
@@ -38,14 +37,15 @@ export default Component.extend({
 	}),
 
 	didRender(){
-		var objDiv = document.getElementById("chat-scroll-div");
-		objDiv.scrollTop = objDiv.scrollHeight;
-    this.$('#chatbox-input').focus();
+		// This scrolls to chat newest messages.
+		// alert("TEST");
+		window.scrollTo(0,document.body.scrollHeight);
+		console.log("CHAT DID RENDER");
   },
 
 	init() {
-		//this.set('current_recipient_id', model.)
-
+				console.log("CHAT INITTED");
+		// alert("INIT");
 		this._super(...arguments);
 		const self = this
 		// window.io = require('socket.io-client');
@@ -61,6 +61,8 @@ export default Component.extend({
 						console.log("QQQ");
 						console.log(e);
 						console.log("QQQ");
+						const audio = new Audio("message_alert.mp3");
+  					audio.play();
         		let model = self.get('model');
         		let user_id = self.get('user_id_sent');
         		let recipient_id = self.get('recipient_id_sent');
@@ -101,7 +103,7 @@ export default Component.extend({
 
 	getHostNameWithSocket: computed(function() {
 		var hostName = location.hostname;
-		return "//localhost:6001/socket.io/socket.io.js";
+		return "//"+window.location.hostname+":6001/socket.io/socket.io.js";
 	}),
 
 	actions: {

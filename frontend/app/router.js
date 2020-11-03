@@ -7,13 +7,12 @@ const Router = EmberRouter.extend({
 });
 
 Router.map(function() {
-    this.route('login', { path: '/' });
+    this.route('login', { path: 'index' });
+    this.route('main', { path: '/' });
   	this.route('register', { path: '/register' });
 	  this.route('main', { path: '/main' });
 	  this.route('channel');
-	  this.route('contacts', function() {
-		this.route('chat', { path: ':userId' });
-	});
+	  this.route('chat', { path: 'chat/:userId' });
 });
 
 export default Router;

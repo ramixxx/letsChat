@@ -22,12 +22,7 @@
 								<img src="arrowOpen.png" height="20" width="20" id="openButton" role="button" alt="Cant show image" class="openbtn" {{action "toggleSidebar"}}>
 						</div>
 				{{/if}}
-				<Contact @model={{this.model.contacts}} @anAction={{action "selectUser"}} />
+				<Contact @model={{this.model.contacts}} />
 				<Channel @model={{this.model.channels}} />
-		</div>
-		<div id="mainView">
-				<div class="mainViewScrollDiv" id="mainViewScrollDiv">
-						<Chat @model={{this.selectedChat}} @selectedUserId={{this.selectedUserId}} @config={{this.model.config}} @test={{action "test"}} id="chat-scroll-div"/>
-				</div>
 		</div>
 </div>

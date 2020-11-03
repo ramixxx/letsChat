@@ -15,31 +15,6 @@ export default Ember.Controller.extend({
 
 	init() {
 		this._super(...arguments);
-		this.fetchChat();
-	},
-
-	async fetchChat() {
-		if(!this.selectedUserId) {
-			this.set('selectedChat', []);
-			return;
-		}
-
-		let currentUserIdentifier = this.get('session.data.authenticated.identifier');
-		let filter = { selectedUserId: this.selectedUserId, activeUserId: currentUserIdentifier };
-	  let results = await this.store.query('selectedUserChat', { filter });
-
-
-		results.forEach(function(item, index){
-			var userId = item.recipient_id;
-			if (userId == currentUserIdentifier) {
-				Ember.set(item, "sender", true);
-			} else {
-				Ember.set(item, "sender", false);
-				//item['sender'] = true;
-			}
-		});
-		console.log(results);
-	  	this.set('selectedChat', results);
 	},
 
 	didSidebarChanged: Ember.observer('sidebarOpened', function() {
@@ -71,12 +46,6 @@ export default Ember.Controller.extend({
 		test() {
 			this.get('model').reload();
 		},
-
-		selectUser(userId) {
-			//this.websocket.socketRef.send(userId);
-		  	this.set('selectedUserId', userId);
-		  	this.fetchChat();
-		}
 
 		// selectUser(userId) {
 		// 	var self = this;

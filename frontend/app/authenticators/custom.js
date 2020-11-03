@@ -10,7 +10,6 @@ export default Base.extend({
 	activateLoginIcon: service('activate-login-icon'),
   restore(data) {
     return new Promise((resolve, reject) => {
-      console.log(data);
       if (!Ember.isEmpty(data.success.access_token)) {
         console.log(data);
         resolve(data);
@@ -24,9 +23,10 @@ export default Base.extend({
       username: email, password: password
     });
   this.activateLoginIcon.on();
+  console.log("TEST: ",);
  	const requestOptions = {
       async: true,
-      url: 'http://localhost:8000/api/login',
+      url: 'http://'+ window.location.hostname +':8000/api/login',
       method: 'POST',
       contentType: 'application/json',
       data: data
