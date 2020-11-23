@@ -1,50 +1,33 @@
-import Ember from 'ember';
+import Controller from '@ember/controller';
+import { alias, reads } from '@ember/object/computed';
+import { observer } from '@ember/object';
 import jQuery from 'jquery';
 import { inject as service } from '@ember/service';
+import { action } from '@ember/object';
 
-const { computed, observer } = Ember;
-const { alias } = computed;
-
-export default Ember.Controller.extend({
+export default Controller.extend({
 	session: service(),
-	websocket: service(),
-	sidebarOpenedRes: false,
+	sidebarState: service(),
 	queryParams: ['selectedUserId'],
 	selectedUserId: null,
-	contacts: computed.reads('model.contacts'),
+	contacts: reads('model.contacts'),
 
 	init() {
 		this._super(...arguments);
 	},
 
-	didSidebarChanged: Ember.observer('sidebarOpened', function() {
-
-  		if($("#mySidebar").width() > 240) {
-  				document.getElementById("mySidebar").style.width = "0";
-		  		document.getElementById("main").style.marginLeft = "0";
-		  		$('#closeButton').removeClass("closebtnmargin");
-		  		this.set('sidebarOpenedRes', false);
-		} else {
-			this.set('sidebarOpenedRes', true);
-			document.getElementById("mySidebar").style.width = "250px";
-  			document.getElementById("main").style.marginLeft = "250px";
-  			$('#closeButton').removeClass("closebtnmargin");
-
-		}
-  	}),
-
-	actions: {
+	@action
 		// closeSidebar() {
 		// 	document.getElementById("left-sidebar").style.width = "0";
   // 			document.getElementById("main").style.marginLeft = "0";
   // 			this.set('sidebarOpened', false);
 		// },
 		toggleSidebar() {
-			this.toggleProperty('sidebarOpened');
+			this.sidebarState.toggleSidebar();
 		},
 
 		test() {
-			this.get('model').reload();
+			this.model.reload();
 		},
 
 		// selectUser(userId) {
@@ -79,5 +62,5 @@ export default Ember.Controller.extend({
 		//   document.getElementById("left-sidebar").style.width = "250px";
 		//   this.set('sidebarOpened', true);
 		// }
-	}
+	
 });

@@ -1,9 +1,6 @@
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
-import Ember from 'ember';
-import { set } from '@ember/object';
-
-const { computed, observer } = Ember;
+import { set, observer } from '@ember/object';
 
 export default Component.extend({
 	store: service(),
@@ -13,7 +10,7 @@ export default Component.extend({
 
 
 	didInsertElement() {
-		var model = this.get('model');
+		var model = this.model;
 		
 	},
 

@@ -12,24 +12,34 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+	Auth::routes();
+	Route::post('register', 'api\UserController@register');
+	Route::post('login', 'api\UserController@login');
+	Route::post('makeUserOnline/{identifier}', 'api\UserController@makeUserOnline');
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+	Route::get('contact/{id}', 'api\ContactController@show');
+	Route::get('channel/{id}', 'api\ChannelController@show');
+	Route::get('config/{id}', 'api\ConfigController@show');
+
+	Route::get('selectedUserChats', 'api\MessageController@get');
+	Route::post('postMessage', 'api\MessageController@post');
+
+
+Route::group([
+     'prefix' => 'auth'
+], function () {
+
+	Route::group([
+         'middleware' => 'auth:api'
+       ], function() {
+
+           Route::get('logout', 'api\UserController@logoutApi');
+           Route::get('user', 'api\UserController@user');
+    });
 });
-Route::post('register', 'api\UserController@register');
-Route::post('login', 'api\UserController@login');
-Route::post('logout/{identifier}', 'api\UserController@logout');
-Route::post('makeUserOnline/{identifier}', 'api\UserController@makeUserOnline');
 
-Route::get('contact/{id}', 'api\ContactController@show');
-Route::get('channel/{id}', 'api\ChannelController@show');
-Route::get('config/{id}', 'api\ConfigController@show');
-
-Route::get('selectedUserChats', 'api\MessageController@get');
-Route::post('postMessage', 'api\MessageController@post');
-
-Route::get('/Websocket', 'WebSockets@getInfo');
 
 Route::get('test-broadcast', function(){
 
 });
+

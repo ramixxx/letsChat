@@ -21,10 +21,11 @@ class SomeTestEvent implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($value, $date)
+    public function __construct($value, $date, $image)
     {
-        $this->data['value'] = $value;
+        $this->data['message'] = $value;
         $this->data['date'] = $date;
+        $this->data['image'] = $image;
     }
 
     /**
@@ -38,10 +39,11 @@ class SomeTestEvent implements ShouldBroadcast
     }
 
     public function broadcastWith()
-    {
+    {   
         return [
-            'data' => $this->data['value'],
-            'date' => $this->data['date']
+            'message' => $this->data['message'],
+            'date' => $this->data['date'],
+            'image' => $this->data['image']
         ];
     }
 

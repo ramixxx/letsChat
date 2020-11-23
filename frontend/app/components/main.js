@@ -1,7 +1,6 @@
+import { alias } from '@ember/object/computed';
+import { observer } from '@ember/object';
 import Component from '@ember/component';
-
-const { computed, observer } = Ember;
-const { alias } = computed;
 
 export default Component.extend({
 	didRender() {

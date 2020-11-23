@@ -1,12 +1,10 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
-import Ember from 'ember';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
 export default Route.extend(AuthenticatedRouteMixin,{
 	store: service(),
 	session: service(),
-	currentUser: service(),
 	activateLoginIcon: service('activate-login-icon'),
 
 	// setupController(controller, model) {
@@ -14,36 +12,33 @@ export default Route.extend(AuthenticatedRouteMixin,{
 	//     this.controllerFor('contact').set('contact', model);
  //  	},
 
+ 	async model() {
+		let currentUserIdentifier = this.get('session.data.authenticated').identifier;
+		let contacts = await (await fetch('http://localhost:8000/api/contact/' + currentUserIdentifier)).json();
+		let channels = await (await fetch('http://localhost:8000/api/channel/' + currentUserIdentifier)).json();
+		
+  		//let tests = await (await fetch('http://localhost:8000/api/test')).json();
+  		return { contacts, channels };
+	},
+
 
 	actions: {
-		// closeSidebar() {
-		// 	document.getElementById("left-sidebar").style.width = "0";
-  // 			document.getElementById("main").style.marginLeft = "0";
-		// },
-		// logout() {
-		// 	$.ajax({
-	 //            type: "POST",
-	 //            url: "http://localhost:8000/api/logout"
-	 //        }).then(response => {
-	 //        	this.activateLoginIcon.off();
-	 //        	this.store.unloadAll('contact');
-	 //            this.transitionTo('login');
-	 //        })
-		// }
+
 
 		invalidateSession() {
 
 				let controller = this;
-				let currentUserIdentifier = controller.get('session.data.authenticated.identifier');
-				console.log("CURR USER ID : ",currentUserIdentifier);
+				const access_token = this.get('session.data.authenticated').access_token;
 				$.ajax({
-            type: "POST",
-            url: "http://"+window.location.hostname+":8000/api/logout/" + currentUserIdentifier
+            type: "GET",
+            url: "http://"+window.location.hostname+":8000/api/auth/logout/",
+            headers: {"Authorization": "Bearer " + access_token},
+            contentType: 'application/json',
         }).then(response => {
         	// this.activateLoginIcon.off();
         	this.store.unloadAll('contact');
            // this.transitionTo('login');
-					 this.get('session').invalidate();
+					 this.session.invalidate();
         })
 
 		}

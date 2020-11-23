@@ -1,5 +1,4 @@
-SUGABOONBOONM
-<div id="mainView">
+<div id="mainView" class={{if this.sidebarState.isSidebarOpen 'chat-view-sidebar-open' 'chat-view-sidebar-closed'}}>
 		<div class="mainViewScrollDiv" id="mainViewScrollDiv">
 		{{#each @model as |item|}}
 				{{#if item.sender}}
@@ -36,11 +35,12 @@ SUGABOONBOONM
 		{{/each}}
 	</div>
 </div>
-<div class="chatbox">
-		<form {{action "submitChatText" chatInputValue on="submit"}}>
+<div id="chatbox" class={{if this.sidebarState.isSidebarOpen 'chatbox-sidebar-open' 'chatbox-sidebar-closed'}}>
+		<form {{action "submitChatText" chatInputValue on="submit"}} id="chatbox-form">
 				<button type="submit" class="chatbox-submit">Submit</button>
 				{{input class="chatbox-input" id="chatbox-input" value=chatInputValue}}
 		</form>
 </div>
 
 <script src={{getHostNameWithSocket}}></script>
+{{outlet}}

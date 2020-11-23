@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import { resolve } from 'rsvp';
+import { isEmpty } from '@ember/utils';
 import Base from 'ember-simple-auth/authenticators/base';
 import { inject as service } from '@ember/service';
 
@@ -10,35 +13,38 @@ export default Base.extend({
 	activateLoginIcon: service('activate-login-icon'),
   restore(data) {
     return new Promise((resolve, reject) => {
-      if (!Ember.isEmpty(data.success.access_token)) {
-        console.log(data);
+      if (!isEmpty(data.access_token)) {
+        console.log("TEST: ",data);
         resolve(data);
       } else {
+        console.log("REJECTED");
         reject();
       }
     });
   },
   authenticate(email, password) {
  	const data = JSON.stringify({
-      username: email, password: password
+      email: email, password: password
     });
   this.activateLoginIcon.on();
   console.log("TEST: ",);
  	const requestOptions = {
       async: true,
-      url: 'http://'+ window.location.hostname +':8000/api/login',
+      url: 'http://'+ window.location.hostname +':8000/' + this.get('tokenEndpoint'),
       method: 'POST',
       contentType: 'application/json',
       data: data
     };
 
-    var result = Ember.RSVP.resolve(Ember.$.ajax(requestOptions));
+
+    var result = resolve($.ajax(requestOptions));
+    console.log("Dwdwwd",result);
     return result;
   },
   invalidateSession(data) {
 alert("test");
-    const requestOptions = this.get('session').invalidate();
+    const requestOptions = this.session.invalidate();
 
-    return Ember.RSVP.resolve(Ember.$.ajax(requestOptions));
+    return resolve($.ajax(requestOptions));
   }
 });

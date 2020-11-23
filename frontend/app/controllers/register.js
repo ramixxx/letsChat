@@ -1,9 +1,9 @@
-import Ember from 'ember';
+import $ from 'jquery';
+import Controller from '@ember/controller';
+import { observer } from '@ember/object';
 import { match, not, gte, and } from '@ember/object/computed';
 
-const { computed, observer } = Ember;
-
-export default Ember.Controller.extend({
+export default Controller.extend({
 	authenticated: false,
 	error: false,
 
@@ -16,7 +16,7 @@ export default Ember.Controller.extend({
 
 	actions: {
 		register(name, email, password) {
-			Ember.$.ajax({
+			$.ajax({
 	            type: "POST",
 	            url: "http://localhost:8000/api/register",
 	            data: { name: name, email: email, password: password }

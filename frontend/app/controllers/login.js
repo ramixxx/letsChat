@@ -1,11 +1,11 @@
-import Ember from 'ember';
+import Controller from '@ember/controller';
+import { observer, computed } from '@ember/object';
 import jQuery from 'jquery';
 import { match, not } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
+import { action } from "@ember/object";
 
-const { computed, observer } = Ember;
-
-export default Ember.Controller.extend({
+export default Controller.extend({
 	activateLoginIcon: service('activate-login-icon'),
 	needs: ['main'],
 	authenticated: false,
@@ -15,31 +15,33 @@ export default Ember.Controller.extend({
 	isDisabled: not('isValid'),
 	session: service(),
 
-	didActivateLogoChange: Ember.computed('activateLoginIcon.loadingLogin', function() {
+	didActivateLogoChange: computed('activateLoginIcon.loadingLogin', function() {
 		return this.get('activateLoginIcon.loadingLogin');
 	}),
 
-	actions: {
-		authenticate() {
-			console.log("WTF");
-	    	let { email, password } = this.getProperties('email', 'password');
-				let controller = this;
-	    	this.get('session').authenticate('authenticator:custom', email, password).then(function(result) {
-						let currentUserIdentifier = controller.get('session.data.authenticated.identifier');
-						console.log("IDENTIFIER : ", currentUserIdentifier);
-						console.log("?@?@?@");
-						console.log(controller.get('session').data);
-						$.ajax({
-				            type: "POST",
-				            url: "http://"+window.location.hostname+":8000/api/makeUserOnline/" + currentUserIdentifier
-				    }).then(response => {
+	@action
+	async authenticate() {
+	    let { email, password } = this;
+		let controller = this;
+		try {
+	      	await this.session.authenticate('authenticator:custom', email, password);
+	    } catch(error) {
+	      	this.errorMessage = error.error || error;
+	    }
 
-				        	// this.activateLoginIcon.off();
 
-						});
-      	}, function(err) {
-        	console.log(err);
-      	});
-    }
+	    if (this.session.isAuthenticated) {
+	    	console.log("IS AUTHENTICATED");
+	    	let currentUserIdentifier = controller.get('session.data.authenticated').identifier;
+      		$.ajax({
+				type: "POST",
+				url: "http://"+window.location.hostname+":8000/api/makeUserOnline/" + currentUserIdentifier
+			}).then(response => {
+				this.activateLoginIcon.off();
+			});
+   		} else {
+   			console.log("NOT AUTHENTICATED");
+   		}
+    
 	}
 });

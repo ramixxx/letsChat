@@ -25,12 +25,14 @@ class MessageController extends Controller
     	$message = $request->get('message');
     	$recipient_id = $request->get('recipient_id');
     	$user_id = $request->get('user_id');
+        $current_user_image = $request->get('current_user_image');
 
-      $currentTime = Carbon::now()->format('Y-m-d H:i:s.u');
-      broadcast(new \App\Events\SomeTestEvent($message, $currentTime))->toOthers();
+        $currentTime = Carbon::now()->format('Y-m-d H:i:s.u');
+        broadcast(new \App\Events\SomeTestEvent($message, $currentTime, $current_user_image))->toOthers();
     	$postMessage = DB::insert('INSERT INTO user_messages(recipient_id,message,user_id,date_created) VALUES (?,?,?,?)', [$recipient_id,$message,$user_id,$currentTime]);
     	$id = DB::getPdo()->lastInsertId();
-    	return [$id, $currentTime];
+        return response()->json(["id" => $id, "time" => $currentTime]);
+    	
     }
 
     public function postMessage(Request $request){

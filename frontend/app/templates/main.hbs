@@ -1,11 +1,11 @@
 <div id="main">
 		<div class="header">
-				<img src="logo-top.png" alt="Cant show image">
+				<img src="/logo-top.png" id="top-logo" alt="Cant show image">
 				<div class="dropdown">
 						<button class="dropbtn">Settings</button>
 						<div class="dropdown-content">
-								<a href="#">Link 1</a>
-								<a href="#">Link 2</a>
+								<a href="#">Invite</a>
+								<a href="#">Settings</a>
 								{{#if session.isAuthenticated}}
 										<a href="#" {{action "invalidateSession"}}>Logout</a>
 								{{/if}}
@@ -13,16 +13,17 @@
 				</div>
 		</div>
 		<div id="mySidebar" class="sidebar">
-				{{#if sidebarOpenedRes}}
+				{{#if this.sidebarState.isSidebarOpen}}
 						<div id="main">
-								<img src="arrowClose.png" height="20" width="20" id="closeButton" role="button" alt="Cant show image" class="closebtn" {{action "toggleSidebar"}}>
+								<img src="/arrowClose.png" height="20" width="20" id="closeButton" role="button" alt="Cant show image" class="closebtn" {{action "toggleSidebar"}}>
 						</div>
 				{{else}}
 						<div id="main">
-								<img src="arrowOpen.png" height="20" width="20" id="openButton" role="button" alt="Cant show image" class="openbtn" {{action "toggleSidebar"}}>
+								<img src="/arrowOpen.png" height="20" width="20" id="openButton" role="button" alt="Cant show image" class="openbtn" {{action "toggleSidebar"}}>
 						</div>
 				{{/if}}
 				<Contact @model={{this.model.contacts}} />
 				<Channel @model={{this.model.channels}} />
 		</div>
 </div>
+{{outlet}}
