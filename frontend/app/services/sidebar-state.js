@@ -9,7 +9,11 @@ export default Service.extend({
 		if($("#mySidebar").width() > 240) {
   				document.getElementById("mySidebar").style.width = "0";
 		  		document.getElementById("top-logo").style.marginLeft = "0";
-		  		document.getElementById("chatbox").style.marginLeft = "0";
+		  		let chatbox = document.getElementById("chatbox");
+	  			if (chatbox) {
+	  				document.getElementById("chatbox").style.marginLeft = "0";
+	  			}
+  			
 		  		
 		  		// $('.header').css('paddingRight', '0px');
 		  		$('#closeButton').removeClass("closebtnmargin");
@@ -18,7 +22,11 @@ export default Service.extend({
 			this.set('isSidebarOpen', true);
 			document.getElementById("mySidebar").style.width = "250px";
   			document.getElementById("top-logo").style.marginLeft = "250px";
-  			document.getElementById("chatbox").style.marginLeft = "250px";
+  			let chatbox = document.getElementById("chatbox");
+  			if (chatbox) {
+  				document.getElementById("chatbox").style.marginLeft = "250px";
+  			}
+  			
   			// $('.header').css('marginRight', '250px');
   			$('#closeButton').removeClass("closebtnmargin");
 
